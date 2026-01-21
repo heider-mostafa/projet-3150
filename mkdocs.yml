@@ -37,8 +37,8 @@ theme:
     
 copyright: "&copy; 2026 <b>DIRO</b> &ndash; Template de site pour le cours IFT3150 <br>Département d'informatique et de recherche opérationnelle <br>Université de Montréal"
 
-repo_name: ift3150-template
-repo_url: https://github.com/ift3150-template/ift3150-template.github.io
+repo_name: Projet IFT3150
+repo_url: https://github.com/heider-mostafa/projet-3150
 # edit_uri: edit/main/docs/
 
 # extra:

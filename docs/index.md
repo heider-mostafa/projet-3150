@@ -14,10 +14,9 @@ title: Vue d'ensemble du projet
 
 !!! info "Informations générales"
     **Session**: Hiver 2026  
-    **Auteur(s)**: <!-- Nom de chaque membre (matricule)  -->  
-    **Thème(s)**: <!-- Thèmes principaux abordés dans le projet  -->  
-    **Superviseur(s)**: <!-- Nom du superviseur (affiliation)  -->  
-    **Collaborateur(s):** <!-- Nom de(s) collaborateur(s) et partenaire(s)` -->  
+    **Auteur(s)**: Heider Mostafa  
+    **Thème(s)**: Logement, Developpement application mobile, Genie logiciel, IA (LLM)  
+    **Superviseur(s)**: Louis-Edouard Lafontant  
 
 ## Description du projet
 
@@ -48,7 +47,7 @@ title: Vue d'ensemble du projet
 
 ## Équipe
 
-> Présentez les membres de l’équipe et le rôle principal de chacun dans le projet.
+Heider Mostafa : Responsable de projet
 
 ## Échéancier
 
