@@ -1,0 +1,497 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{graphicx} % Added for images
+\usepackage{fancyhdr} % Added for headers/footers
+\usepackage{listings} % Added for code snippets
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\geometry{margin=2.2cm}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+% Colors for code snippets
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegray},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% Header and Footer setup
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Projet 3150 - HomeOS}
+\lhead{Rapport Final}
+\rfoot{Page \thepage}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\scshape\LARGE Université de Montreal \par}
+    \vspace{1.5cm}
+    {\scshape\Large  Projet 3150 \par}
+    \vspace{1.5cm}
+    
+    % TODO: Décommenter et ajouter le chemin vers le logo de votre université
+    % \includegraphics[width=0.3\textwidth]{logo_placeholder.png}\par\vspace{1.5cm}
+    
+    \rule{\linewidth}{0.5mm} \\[0.4cm]
+    {\huge\bfseries HomeOS\\[0.4cm]
+    \large Structuration intelligente de la maintenance résidentielle}
+    \rule{\linewidth}{0.5mm} \\[1.5cm]
+    
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushleft} \large
+            \emph{Auteur :}\\
+            Mostafa \textsc{Heider}
+        \end{flushleft}
+    \end{minipage}~
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushright} \large
+            \emph{Superviseur :} \\
+            Louis-Edouard Lafontant
+        \end{flushright}
+    \end{minipage}\\[2cm]
+    
+    \vfill
+    {\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section*{Résumé}
+\addcontentsline{toc}{section}{Résumé}
+
+HomeOS est conçu comme le \textbf{système d'exploitation des petits propriétaires résidentiels}, un segment massif mais historiquement sous-outillé. Aujourd'hui, la maintenance locative se gère encore via SMS, appels, photos isolées et mémoire humaine. Cette fragmentation coûte du temps, de la confiance et, surtout, de la valeur économique.
+
+Notre proposition n'est pas une simple ``app de tickets''. HomeOS relie en un seul flux: signalement locataire, qualification IA, priorisation propriétaire, dispatch fournisseur, suivi de l'intervention, et preuve de clôture. Autrement dit, nous transformons une suite d'échanges informels en pipeline opérationnel traçable.
+
+Le prototype démontre la faisabilité produit, technique et métier de cette thèse: \textit{quand la maintenance devient structurée, on réduit les frictions relationnelles, on accélère l'exécution et on améliore la rétention locataire}.
+
+\vspace{0.5cm}
+\textbf{Mots-clés :} React Native, Supabase, Intelligence Artificielle, Maintenance immobilière, RLS, Application Mobile.
+
+\section{Thèse produit et angle ``VC''}
+
+\subsection{Pourquoi ce problème est important}
+
+Le marché visé n'est pas marginal. Il combine volume (parc locatif élevé), fréquence (maintenance récurrente) et douleur (litiges, délais, opacité). Une douleur fréquente et coûteuse est exactement le type de problème qui justifie une catégorie logicielle dédiée.
+
+\subsection{Pourquoi maintenant}
+
+Trois signaux convergent:
+
+\begin{itemize}[leftmargin=1.4em]
+  \item maturité des briques infra (\textit{BaaS}, realtime, mobile cross-platform) permettant un coût de lancement faible;
+  \item attente utilisateur d'expériences instantanées, transparentes et mobiles;
+  \item disponibilité de l'IA générative capable de transformer un texte flou en objet d'action structuré.
+\end{itemize}
+
+\subsection{Positionnement}
+
+HomeOS se positionne entre les suites enterprise trop lourdes et les workflows artisanaux trop risqués. Nous ciblons le \textbf{petit parc locatif} avec une UX orientée exécution quotidienne, pas reporting institutionnel.
+
+\section{Contexte et justification}
+
+\subsection{Problème terrain}
+
+Le marché locatif montréalais est fortement composé de petits immeubles gérés sans structure professionnelle lourde. Dans ce contexte, les incidents de maintenance souffrent de quatre faiblesses récurrentes :
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item signalement incomplet ou ambigu ;
+  \item absence de priorisation standardisée ;
+  \item faible traçabilité des décisions ;
+  \item dépendance au réseau personnel du propriétaire.
+\end{enumerate}
+
+\subsection{Données de cadrage}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{4cm} >{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}p{5cm}}
+\toprule
+\textbf{Indicateur} & \textbf{Valeur} & \textbf{Source} & \textbf{Interprétation projet}\\
+\midrule
+Unités locatives Montréal & \(\sim\)500\,000 & SCHL 2025 & Échelle suffisante pour justifier un outil spécialisé.\\
+Part des petits immeubles owner-managed & 60--70\% & APQ / SCHL & Besoin d'une solution légère, non enterprise-heavy.\\
+Taux de vacance (global) & 2.9\% & SCHL 2025 & Importance de la rétention locataire et de la qualité maintenance.\\
+Litiges liés à la maintenance & \(\sim\)30\% & FRAPRU & Nécessité de traçabilité et preuve opérationnelle.\\
+\bottomrule
+\end{longtable}
+
+\section{Objectifs du projet}
+
+\subsection{Objectif principal}
+
+Concevoir et livrer un prototype mobile qui transforme un processus locatif informel en pipeline numérique fiable et bilingue.
+
+\subsection{Objectifs spécifiques}
+
+Au-delà des fonctionnalités, les objectifs ont été formulés comme des objectifs de \textbf{performance opérationnelle}:
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Réduire l'ambiguïté}: convertir un signalement locataire hétérogène en demande exploitable;
+  \item \textbf{Réduire le temps de coordination}: passer plus vite de ``problème signalé'' à ``intervention planifiée'';
+  \item \textbf{Réduire le risque relationnel et légal}: maintenir une trace claire de qui a fait quoi, quand;
+  \item \textbf{Équiper les deux côtés}: produire de la confiance mutuelle (locataire/propriétaire) via transparence;
+  \item \textbf{Préparer l'industrialisation}: garder un socle technique suffisamment propre pour une montée en charge.
+\end{itemize}
+
+\section{Méthodologie}
+
+\subsection{Approche de travail}
+
+Le projet a été mené en cycles itératifs :
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item cadrage du problème et analyse de l'existant ;
+  \item conception du schéma de données et des politiques RLS ;
+  \item implémentation incrémentale par modules fonctionnels ;
+  \item validation par scénarios de bout en bout ;
+  \item correction des incohérences données/politiques.
+\end{enumerate}
+
+\subsection{Organisation fonctionnelle}
+
+Le développement a suivi une logique par blocs, mais chaque bloc a été évalué selon sa capacité à créer de la valeur métier immédiate :
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Locataire} : qualité du signalement, visibilité sur l'avancement, autonomie informationnelle;
+  \item \textbf{Propriétaire} : vitesse d'exécution, gouvernance opérationnelle, contrôle du réseau fournisseur;
+  \item \textbf{Transverse} : sécurité, cohérence des données, compatibilité bilingue, assistance IA.
+\end{itemize}
+
+\section{Architecture technique}
+
+\subsection{Pile technologique}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.5cm} >{\raggedright\arraybackslash}p{4cm} >{\raggedright\arraybackslash}p{7.5cm}}
+\toprule
+\textbf{Couche} & \textbf{Technologies} & \textbf{Rôle}\\
+\midrule
+Mobile & React Native 0.81.5, Expo SDK 54 & Interface iOS/Android, accès caméra, contacts, géolocalisation, notifications.\\
+Backend & Supabase (PostgreSQL + Auth + Storage + Realtime) & Données, sécurité d'accès, authentification, synchronisation temps réel.\\
+IA & Gemini (gemini-2.0-flash) & Diagnostic de maintenance structuré + assistant légal contextuel.\\
+Navigation/UI & React Navigation v7, composants réutilisables & Séparation claire des parcours locataire/propriétaire.\\
+Internationalisation & i18n-js, expo-localization & Interface bilingue EN/FR avec préférence persistante.\\
+\bottomrule
+\end{longtable}
+
+% TODO: Ajouter un diagramme d'architecture pour la présentation académique
+% \begin{figure}[htbp]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{chemin_vers_diagramme_architecture.png}
+%     \caption{Architecture technique du système HomeOS}
+%     \label{fig:architecture}
+% \end{figure}
+
+\subsection{Indicateurs de taille du prototype}
+
+Comptage direct du code source :
+
+\begin{longtable}{lr}
+\toprule
+\textbf{Élément} & \textbf{Quantité}\\
+\midrule
+Écrans React Native & 29\\
+Hooks personnalisés & 4\\
+Composants réutilisables & 8\\
+Fichiers de navigation & 3\\
+Tables \texttt{project\_*} (schéma) & 19\\
+\bottomrule
+\end{longtable}
+
+\section{Modèle de données et sécurité}
+
+\subsection{Tables métier principales}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \texttt{project\_profiles}, \texttt{project\_buildings}, \texttt{project\_units}
+  \item \texttt{project\_requests}, \texttt{project\_work\_orders}, \texttt{project\_appointments}
+  \item \texttt{project\_vendors}, \texttt{project\_landlord\_vendors}
+  \item \texttt{project\_utility\_ledger}, \texttt{project\_notifications}, \texttt{project\_messages}
+  \item \texttt{project\_building\_services}, \texttt{project\_utility\_usage}
+\end{itemize}
+
+% TODO: Ajouter un diagramme ER (Entité-Relation) pour montrer les relations SQL
+% \begin{figure}[htbp]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{chemin_vers_diagramme_er.png}
+%     \caption{Schéma relationnel de la base de données Supabase}
+%     \label{fig:er_diagram}
+% \end{figure}
+
+\subsection{RLS : apprentissage important}
+
+Un résultat marquant du projet a été l'impact direct des politiques RLS (Row Level Security) sur la perception produit :
+
+\begin{itemize}[leftmargin=1.4em]
+  \item Les données pouvaient exister en base tout en restant invisibles dans le tableau de bord ;
+  \item La correction des politiques (\texttt{owner\_id}, \texttt{landlord\_id}, \texttt{tenant\_id}) a débloqué les vues propriétaire ;
+  \item Conclusion : la sécurité d'accès est une partie fonctionnelle du produit, pas uniquement un détail d'infrastructure.
+\end{itemize}
+
+\textbf{Exemple de politique RLS implémentée :}
+\begin{lstlisting}[language=SQL, caption=Exemple de politique RLS pour l'accès aux requêtes]
+-- Exemple: Les locataires peuvent voir leurs propres requêtes
+CREATE POLICY "Tenants can view own requests" 
+ON project_requests FOR SELECT 
+USING (auth.uid() = tenant_id);
+\end{lstlisting}
+
+\section{Fonctionnalités livrées}
+
+\subsection{Parcours locataire}
+
+Le parcours locataire a été pensé pour éliminer le ``flou d'entrée''. Concrètement, l'utilisateur peut soumettre une demande soit en mode rapide, soit en mode guidé, avec capture d'images et description contextualisée. Le module IA transforme ensuite cette description en diagnostic structuré (cause probable, sévérité, urgence, fourchette de coût, corps de métier recommandé). Le locataire n'envoie donc plus une plainte libre, mais un objet déjà qualifié.
+
+Une fois la demande créée, le locataire retrouve un suivi unifié: statut, activité, notifications, et historique. Ce design répond à un besoin clé: \textit{ne plus se demander ``est-ce que quelqu'un s'en occupe?''}.
+
+Le flux financier (paiement du loyer + historique) et le guide résidentiel (wifi/énergie/eau/déchets) complètent la proposition: HomeOS n'est pas seulement un canal de maintenance, c'est un \textbf{point d'entrée unique} pour la vie locative.
+
+\subsection{Parcours propriétaire}
+
+Côté propriétaire, l'enjeu est moins ``voir des données'' que \textit{prendre des décisions vite et bien}. Le tableau de bord met donc en avant ce qui est actionnable: immeubles, demandes prioritaires, activité en cours et santé financière.
+
+Le coeur de valeur est le dispatch: depuis une demande, le propriétaire sélectionne un fournisseur de son réseau, planifie l'intervention, et le système crée automatiquement les objets opérationnels (\texttt{work\_order}, \texttt{appointment}, notification). Cette orchestration réduit fortement les opérations manuelles et les oublis.
+
+Le module réseau fournisseur (découverte + ajout + liaison propriétaire/fournisseur) agit comme un multiplicateur d'efficacité: le propriétaire capitalise sur un carnet d'adresses vivant plutôt que de repartir de zéro à chaque incident.
+
+\section{Cas d'usage narratif: de l'incident à la résolution}
+
+Pour illustrer la valeur du produit sans rester au niveau ``feature list'', prenons un scénario réel de démonstration:
+
+\textbf{Contexte.} Jean (locataire) observe une fuite sous l'évier. Dans un flux classique, il envoie un message incomplet, puis plusieurs échanges sont nécessaires avant de comprendre la gravité, trouver un plombier et planifier un passage.
+
+\textbf{Avec HomeOS.}
+\begin{enumerate}[leftmargin=1.4em]
+  \item Jean crée une demande avec photos + description;
+  \item l'IA propose une qualification immédiate (gravité, urgence, métier recommandé);
+  \item Marie (propriétaire) voit la demande priorisée dans son pool opérationnel;
+  \item elle dispatch ``Apex Plumbing'' depuis son réseau en quelques actions;
+  \item HomeOS crée automatiquement le bon de travail, le rendez-vous, et notifie Jean;
+  \item les deux parties suivent le statut sans relancer manuellement.
+\end{enumerate}
+
+\textbf{Résultat métier.} Le gain n'est pas seulement ``plus de données''; c'est la réduction du temps mort entre signalement et intervention, la diminution de l'ambiguïté, et une meilleure confiance relationnelle.
+
+% TODO: Ajouter des captures d'écran de l'application pour la soutenance
+% \begin{figure}[htbp]
+%     \centering
+%     \begin{minipage}{0.45\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{capture_locataire.png}
+%         \caption{Vue Locataire - Création de demande}
+%     \end{minipage}\hfill
+%     \begin{minipage}{0.45\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{capture_proprietaire.png}
+%         \caption{Vue Propriétaire - Tableau de bord}
+%     \end{minipage}
+% \end{figure}
+
+\section{Apport de l'IA : valeur réelle}
+
+\subsection{Diagnostic maintenance}
+
+Le module IA retourne un objet structuré (cause probable, sévérité, urgence, coût estimé, corps de métier, prochaines actions), directement persistable dans \texttt{project\_requests.ai\_diagnosis}.
+
+\textbf{Valeur} :
+\begin{itemize}[leftmargin=1.4em]
+  \item meilleure qualité de tri initial ;
+  \item réduction des allers-retours entre locataire et propriétaire ;
+  \item meilleure préparation du dispatch fournisseur.
+\end{itemize}
+
+\subsection{Assistant légal: réduire l'incertitude}
+
+L'assistant légal s'appuie sur un cadre CCQ/TAL et impose une réponse contextualisée avec citation. Dans la pratique, cela apporte une aide immédiate pour les questions récurrentes (délais, obligations, étapes de recours), tout en conservant le rappel qu'il ne s'agit pas d'un avis juridique professionnel.
+
+\textbf{Valeur} :
+\begin{itemize}[leftmargin=1.4em]
+  \item réduction de l'incertitude dans les situations sensibles;
+  \item amélioration de la compréhension des obligations de chaque partie;
+  \item meilleure qualité des échanges locataire/propriétaire.
+\end{itemize}
+
+\subsection{IA en support d'ingénierie}
+
+L'IA a aussi accéléré la production (prototypage, rédaction, itération), mais les décisions critiques sont restées humaines (validation SQL, correction RLS, cohérence des seeds). Ce point est central dans une logique produit sérieuse: \textbf{l'IA augmente la vélocité, elle ne remplace pas la responsabilité d'architecture}.
+
+\section{Évaluation}
+
+\subsection{Stratégie}
+
+Validation orientée scénarios de bout en bout :
+
+\begin{itemize}[leftmargin=1.4em]
+  \item tests manuels sur flux critiques ;
+  \item vérification frontend \(\leftrightarrow\) SQL ;
+  \item contrôle des politiques RLS ;
+  \item validation des interactions cross-persona (dispatch visible des deux côtés).
+\end{itemize}
+
+\subsection{Scénarios critiques validés}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{7.5cm} >{\centering\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{5cm}}
+\toprule
+\textbf{Scénario} & \textbf{Statut} & \textbf{Observation}\\
+\midrule
+Connexion locataire/propriétaire + profil & Validé & Personas actifs et distincts.\\
+Création demande + diagnostic IA & Validé & Données stockées et visibles en activité.\\
+Dashboard propriétaire (immeubles + priorités) & Validé & Débloqué après alignement RLS.\\
+Réseau fournisseurs propriétaire & Validé & Liens \texttt{project\_landlord\_vendors} visibles.\\
+Dispatch Apex plomberie & Validé & Work order + appointment + notification.\\
+Calendrier propriétaire & Validé & Rendez-vous dispatch affiché.\\
+Suivi locataire du dispatch & Validé & Cohérence cross-persona confirmée.\\
+Paiement et historique loyer & Validé & Lecture/écriture ledger opérationnelles.\\
+\bottomrule
+\end{longtable}
+
+\subsection{Limites de l'évaluation}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item pas de suite E2E automatisée ;
+  \item pas de test de charge à grande échelle ;
+  \item pas de campagne UX quantitative formelle (SUS/NPS).
+\end{itemize}
+
+\section{Discussion critique}
+
+Le projet montre une \textbf{faisabilité forte} sur un besoin concret. Le gain principal n'est pas uniquement technique, mais organisationnel :
+
+\begin{itemize}[leftmargin=1.4em]
+  \item structuration du travail de maintenance ;
+  \item réduction du flou informationnel ;
+  \item mise en cohérence des acteurs (locataire, propriétaire, fournisseur).
+\end{itemize}
+
+Le point le plus instructif est la relation entre \textit{donnée, sécurité et expérience utilisateur} : si la gouvernance d'accès est mal alignée, l'application paraît ``vide'' même lorsque la base est correctement alimentée.
+
+\section{Lecture business: modèle économique et stratégie de déploiement}
+
+\subsection{Modèle de revenus proposé}
+
+Le modèle le plus cohérent pour HomeOS est un \textbf{SaaS par unité} avec paliers:
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Starter} (petits propriétaires): fonctions coeur maintenance + suivi;
+  \item \textbf{Pro} : analytics, automatisations avancées, exports enrichis;
+  \item \textbf{Add-ons} : conformité documentaire, intégrations partenaires, support prioritaire.
+\end{itemize}
+
+\subsection{Go-to-market réaliste}
+
+Une stratégie de lancement crédible repose sur:
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item pilote local sur un petit nombre d'immeubles (Montréal);
+  \item preuve d'efficacité sur le cycle ``demande -> intervention'';
+  \item expansion par bouche-à-oreille propriétaire et partenaires (APQ/écosystème local);
+  \item montée en gamme vers des portfolios plus larges.
+\end{enumerate}
+
+\subsection{Pourquoi cela peut devenir défendable}
+
+La défendabilité ne vient pas d'une seule fonctionnalité, mais d'un \textbf{système de données opérationnelles}:
+
+\begin{itemize}[leftmargin=1.4em]
+  \item historique structuré des incidents et résolutions;
+  \item connaissances locales (fournisseurs, délais, coûts typiques);
+  \item habitudes d'usage bi-face (locataires + propriétaires) qui augmentent les coûts de sortie.
+\end{itemize}
+
+\subsection{Unité de valeur économique}
+
+Dans une lecture investisseur, HomeOS améliore trois variables qui influencent directement la rentabilité d'un petit parc:
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Temps de gestion}: moins de coordination manuelle et de relances;
+  \item \textbf{Qualité d'exécution}: meilleure adéquation incident/fournisseur;
+  \item \textbf{Rétention locataire}: plus de transparence et de réactivité.
+\end{itemize}
+
+Le logiciel devient alors non seulement un coût d'outil, mais un levier d'optimisation opérationnelle.
+
+\section{Limites et perspectives}
+
+\subsection{Limites actuelles}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item industrialisation des tests encore insuffisante ;
+  \item dépendance partielle aux APIs externes (IA, cartographie) ;
+  \item flux paiement encore prototype (pas de chaîne transactionnelle certifiée production).
+\end{itemize}
+
+\subsection{Perspectives réalistes}
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item ajouter tests automatisés (unitaires, intégration, E2E) ;
+  \item ajouter observabilité (latence, taux d'erreur, qualité IA) ;
+  \item enrichir analytics propriétaire (cohortes, tendances saisonnières) ;
+  \item renforcer résilience hors-ligne et gestion des pannes API ;
+  \item préparer un pilote terrain avec panel de petits propriétaires montréalais.
+\end{enumerate}
+
+\section{Conclusion}
+
+HomeOS atteint l'objectif central du projet : transformer un processus de maintenance locative informel en système opérationnel cohérent, sécurisé, bilingue et exploitable.
+
+Dans une perspective ``VC'', la proposition est claire: un marché large, un problème fréquent, une solution qui réduit une douleur quotidienne, et une architecture déjà capable de supporter un pilote réel.
+
+L'IA y joue un rôle utile et concret (diagnostic, guidance, accélération de workflow), sans remplacer la responsabilité humaine. Le prototype constitue une base sérieuse pour une trajectoire produit, à condition de renforcer l'automatisation des tests, l'observabilité et les intégrations de production.
+
+\newpage
+\addcontentsline{toc}{section}{Références}
+\begin{thebibliography}{9}
+
+\bibitem{schl-2025}
+Société canadienne d'hypothèques et de logement (SCHL). \textit{Rapport sur le marché locatif — Grand Montréal}, 2025.
+
+\bibitem{frapru-2025}
+Front d'action populaire en réaménagement urbain (FRAPRU). \textit{État du logement social au Québec}, 2025.
+
+\bibitem{apq-2024}
+Association des Propriétaires du Québec (APQ). \textit{Profil des propriétaires québécois}, 2024.
+
+\bibitem{supabase-rls}
+Supabase Documentation. \textit{Row Level Security}. \url{https://supabase.com/docs/guides/auth/row-level-security}
+
+\bibitem{expo-sdk54}
+Expo Documentation. \textit{SDK 54}. \url{https://docs.expo.dev/}
+
+\bibitem{react-nav}
+React Navigation. \textit{React Navigation v7 Documentation}. \url{https://reactnavigation.org/}
+
+\end{thebibliography}
+
+\end{document}
